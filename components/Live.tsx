@@ -7,7 +7,11 @@ import ReactionSelector from './reaction/ReactionButton';
 import FlyingReaction from './reaction/FlyingReaction';
 import useInterval from '@/hooks/useInterval';
 
-const Live = () => {
+type Props = {
+    canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+}
+
+const Live = ({ canvasRef }: Props) => {
     const others = useOthers();
     const [{ cursor }, updateMyPresence] = useMyPresence() as any;
 
@@ -24,13 +28,13 @@ const Live = () => {
     useInterval(() => {
         setReaction((reaction) => reaction.filter((r) => r.timestamp > Date.now() - 4000));
     }, 1000);
-    
+
     // Here saga starts for creating    ;
     useInterval(() => {
         if (cursorState.mode === CursorMode.Reaction && cursorState.isPressed && cursor) {
             setReaction((reactions) => reactions.concat([
                 {
-                    point: {x: cursor.x, y: cursor.y},
+                    point: { x: cursor.x, y: cursor.y },
                     value: cursorState.reaction,
                     timestamp: Date.now(),
                 }
@@ -49,7 +53,7 @@ const Live = () => {
 
         setReaction((reactions) => reactions.concat([
             {
-                point: {x: event.x, y: event.y},
+                point: { x: event.x, y: event.y },
                 value: event.value,
                 timestamp: Date.now(),
             }
@@ -62,16 +66,16 @@ const Live = () => {
         if (cursor == null || cursorState.mode !== CursorMode.ReactionSelector) {
             const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
             const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
-    
-            updateMyPresence({cursor: {x, y}});
+
+            updateMyPresence({ cursor: { x, y } });
         }
 
     }, []);
 
     const handlePointerLeave = useCallback((event: React.PointerEvent) => {
-        setCursorState({mode: CursorMode.Hidden});
+        setCursorState({ mode: CursorMode.Hidden });
 
-        updateMyPresence({ cursor: null, message: null});
+        updateMyPresence({ cursor: null, message: null });
 
     }, []);
 
@@ -79,20 +83,20 @@ const Live = () => {
         const x = event.clientX - event.currentTarget.getBoundingClientRect().x;
         const y = event.clientY - event.currentTarget.getBoundingClientRect().y;
 
-        updateMyPresence({cursor: {x, y}});
+        updateMyPresence({ cursor: { x, y } });
 
-        setCursorState((state: CursorState) => cursorState.mode === CursorMode.Reaction ? {...state, isPressed: true} : state);
+        setCursorState((state: CursorState) => cursorState.mode === CursorMode.Reaction ? { ...state, isPressed: true } : state);
 
     }, [cursorState.mode, setCursorState]);
 
     const handlePointerUp = useCallback((event: React.PointerEvent) => {
-        setCursorState((state: CursorState) => cursorState.mode === CursorMode.Reaction ? {...state, isPressed: true} : state);
+        setCursorState((state: CursorState) => cursorState.mode === CursorMode.Reaction ? { ...state, isPressed: true } : state);
 
     }, [cursorState.mode, setCursorState]);
 
     const setReactions = useCallback((reaction: string) => {
         setCursorState({ mode: CursorMode.Reaction, reaction, isPressed: false });
-      }, []);
+    }, []);
 
 
     useEffect(() => {
@@ -106,7 +110,7 @@ const Live = () => {
             }
             else if (e.key === 'Escape') {
                 updateMyPresence({ message: '' }),
-                setCursorState({ mode: CursorMode.Hidden });
+                    setCursorState({ mode: CursorMode.Hidden });
             }
             else if (e.key === 'e') {
                 setCursorState({
@@ -133,23 +137,25 @@ const Live = () => {
     }, [updateMyPresence]);
 
     return (
-        <div onPointerMove={handlePointerMove} onPointerDown={handlePointerDown} onPointerLeave={handlePointerLeave} onPointerUp={handlePointerUp}
-        className="h-[100vh] w-full flex justify-center items-center text-center border-5 border-green-500 " >
-            <h1 className="text-5xl text-white">Liveblocks Figma Clone</h1>
+        <div id='canvas' onPointerMove={handlePointerMove} onPointerDown={handlePointerDown} onPointerLeave={handlePointerLeave} onPointerUp={handlePointerUp}
+            className="h-[100vh] w-full flex justify-center items-center text-center border-5 border-green-500 " >
+
+            {/* The Canvas begins now */}
+            <canvas ref={canvasRef} />
 
             {reaction.map((r) => (
                 <FlyingReaction key={r.timestamp.toString()}
-                x={r.point.x}
-                y={r.point.y}
-                timestamp={r.timestamp}
-                value={r.value} />
+                    x={r.point.x}
+                    y={r.point.y}
+                    timestamp={r.timestamp}
+                    value={r.value} />
             ))}
 
-            {cursor &&  (
-                <CursorChat cursor={cursor} 
-                cursorState={cursorState}
-                setCursorState={setCursorState} 
-                updateMyPresence={updateMyPresence} /> 
+            {cursor && (
+                <CursorChat cursor={cursor}
+                    cursorState={cursorState}
+                    setCursorState={setCursorState}
+                    updateMyPresence={updateMyPresence} />
             )}
 
             {cursorState.mode === CursorMode.ReactionSelector && (
