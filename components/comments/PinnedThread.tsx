@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { ThreadData } from "@liveblocks/client";
-import { Thread } from "@liveblocks/react-comments";
+import { Thread } from "@liveblocks/react-ui";
 
 import { ThreadMetadata } from "@/liveblocks.config";
 
@@ -74,7 +74,7 @@ export const PinnedThread = ({ thread, onFocus, ...props }: Props) => {
         ) : null}
       </div>
     ),
-    [thread.comments.length, minimized]
+    [thread.comments.length, minimized,thread.metadata.resolved]
   );
 
   return <>{memoizedContent}</>;

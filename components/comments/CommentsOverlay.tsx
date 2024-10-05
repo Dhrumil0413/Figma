@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { ThreadData } from "@liveblocks/client";
+import { ThreadData, User } from "@liveblocks/client";
 
 import { ThreadMetadata, useEditThreadMetadata, useThreads, useUser } from "@/liveblocks.config";
-import { useMaxZIndex } from "@/lib/useMaxZIndex";
+import { useMaxZIndex } from "@/lib/useMaxZIndex";  
 
 import { PinnedThread } from "./PinnedThread";
 
@@ -28,7 +28,7 @@ export const CommentsOverlay = () => {
   return (
     <div>
       {threads
-        .filter((thread) => !thread.metadata.resolved)
+        .filter((thread) => !thread.resolved)
         .map((thread) => (
           <OverlayThread key={thread.id} thread={thread} maxZIndex={maxZIndex} />
         ))}
@@ -50,7 +50,14 @@ const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
    *
    * useUser: https://liveblocks.io/docs/api-reference/liveblocks-react#useUser
    */
-  const { isLoading } = useUser(thread.comments[0].userId);
+  // const { isLoading } = useThreads();
+
+  if (thread?.comments[0]?.userId) {
+    console.log("This is the answer: ", thread.comments[0].userId);
+    // const { isLoading } = useUser(thread.comments[0].userId);
+    // remaining = isLoading;
+  }
+
 
   // We're using a ref to get the thread element to position it
   const threadRef = useRef<HTMLDivElement>(null);
@@ -70,9 +77,6 @@ const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
     });
   }, [thread, editThreadMetadata, maxZIndex]);
 
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <div

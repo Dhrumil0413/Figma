@@ -5,6 +5,8 @@ type Props = {
   attribute: string;
   placeholder: string;
   attributeType: string;
+  isNeeded: boolean;
+  opacity: string;
   handleInputChange: (property: string, value: string) => void;
 };
 
@@ -13,8 +15,12 @@ const Color = ({
   attribute,
   placeholder,
   attributeType,
+  opacity,
+  isNeeded,
   handleInputChange,
-}: Props) => (
+}: Props) => {
+  // console.log("Attribute: ", attributeType);
+  return (
   <div className='flex flex-col gap-3 border-b border-primary-grey-200 p-5'>
     <h3 className='text-[10px] uppercase'>{placeholder}</h3>
     <div
@@ -29,11 +35,28 @@ const Color = ({
         placeholder="Color..."
       />
       <Label className='flex-1'>{attribute}</Label>
-      <Label className='flex h-6 w-8 items-center justify-center bg-primary-grey-100 text-[10px] leading-3'>
+      {/* <Label className='flex h-6 w-8 items-center justify-center bg-primary-grey-100 text-[10px] leading-3'>
         90%
-      </Label>
+      </Label> */}
     </div>
+    { isNeeded ? (<div className='flex items-center gap-2'>
+      <input
+        type='range'
+        min={0}
+        max={100}
+        value={Number(opacity) * 100} // convert opacity (0-1) to percentage
+        onChange={(e) => {
+          const answer = (parseFloat(e.target.value) / 100);
+          handleInputChange("opacity", answer.toString());
+        }} // convert percentage to opacity (0-1)
+        placeholder="Opacity"
+      />
+      <Label className='flex h-6 w-8 items-center justify-center bg-primary-grey-100 text-[10px] leading-3'>
+        {Math.round(Number(opacity) * 100)}%
+      </Label>
+    </div>) :
+    null}
   </div>
-);
+)};
 
 export default Color;

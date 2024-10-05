@@ -55,6 +55,7 @@ export type Attributes = {
   fontFamily: string;
   fontWeight: string;
   fill: string;
+  opacity: string;
   stroke: string;
 };
 

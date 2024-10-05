@@ -139,11 +139,19 @@ export const modifyShape = ({
   syncShapeInStorage,
 }: ModifyShape) => {
   const selectedElement = canvas.getActiveObject();
-
+  
+  
   if (!selectedElement || selectedElement?.type === "activeSelection") return;
 
+  console.log("Type: ", selectedElement?.type, " Object: ", selectedElement);
+  
+  
   // if  property is width or height, set the scale of the selected element
-  if (property === "width") {
+  if (selectedElement.type === "circle") {
+    if (property === "width" || property === "height") {
+      selectedElement.set("radius", parseFloat(value) / 2);
+    }
+  } else if (property === "width") {
     selectedElement.set("scaleX", 1);
     selectedElement.set("width", value);  
   } else if (property === "height") {
