@@ -24,7 +24,7 @@ type Props = {
 
 const Live = ({ canvasRef, undo, redo }: Props) => {
     const others = useOthers();
-    const [{ cursor }, updateMyPresence] = useMyPresence() as any;
+    const [{ cursor }, updateMyPresence] = useMyPresence();
 
     const [cursorState, setCursorState] = useState<CursorState>({
         mode: CursorMode.Hidden,
@@ -60,7 +60,7 @@ const Live = ({ canvasRef, undo, redo }: Props) => {
     }, 500);
 
     useEventListener((eventData) => {
-        const event = eventData.event as ReactionEvent;
+        const event = eventData.event;
 
         setReaction((reactions) => reactions.concat([
             {
