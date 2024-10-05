@@ -3,7 +3,7 @@ import { Avatar } from "./Avatar";
 import { generateRandomName } from '@/lib/utils'
 
 import styles from './index.module.css';
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 
 // The page where you have ActiveUsers info. Though in any page or component you can get the ActiveUsers and CurrentUser info.
 // useOthers(): This hook will allow you to get info of other users;
@@ -14,6 +14,8 @@ export const ActiveUsers = () => {
     const currentUser = useSelf();
     const hasMoreUsers = users.length > 3;
     
+     // Use useMemo to memoize the users rendering to optimize performance
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoizedUsers = useMemo(() => {
         return (
             <div className="flex items-center justify-center gap-1 py-2">

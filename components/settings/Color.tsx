@@ -1,7 +1,8 @@
+import { RefObject } from "react";
 import { Label } from "../ui/label";
 
 type Props = {
-  inputRef: any;
+  inputRef: RefObject<HTMLInputElement>;
   attribute: string;
   placeholder: string;
   attributeType: string;
@@ -25,7 +26,7 @@ const Color = ({
     <h3 className='text-[10px] uppercase'>{placeholder}</h3>
     <div
       className='flex items-center gap-2 border border-primary-grey-200'
-      onClick={() => inputRef.current.click()}
+      onClick={() => inputRef.current?.click()}
     >
       <input
         type='color'

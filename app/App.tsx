@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import LeftSidebar from "@/components/LeftSidebar";
 import RightSidebar from "@/components/RightSidebar";
 import { useEffect, useRef, useState } from "react";
-import { handleCanvaseMouseMove, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasObjectScaling, handleCanvasObjectScalingComplete, handleCanvasSelectionCreated, handlePathCreated, handleResize, initializeFabric, renderCanvas } from '@/lib/canvas';
+import { handleCanvaseMouseMove, handleCanvasMouseDown, handleCanvasMouseUp, handleCanvasObjectModified, handleCanvasSelectionCreated, handlePathCreated, handleResize, initializeFabric, renderCanvas } from '@/lib/canvas';
 import { ActiveElement, Attributes } from '@/types/type';
 import { useMutation, useRedo, useStorage, useUndo } from '@/liveblocks.config';
 import { defaultNavElement } from '@/constants';
@@ -66,8 +66,9 @@ export default function Page() {
 
     if (!canvasObjects || canvasObjects.size === 0) return true;
     
-    for (const [key, value] of canvasObjects.entries()) {
-      canvasObjects.delete(key);
+    const keys = Array.from(canvasObjects.keys()); // Get an array of keys
+    for (const key of keys) {
+        canvasObjects.delete(key); // Delete the key
     }
 
     return canvasObjects.size === 0;
@@ -90,7 +91,8 @@ export default function Page() {
         break;
       
       case 'delete':
-        handleDelete(fabricRef.current as any, deleteShapeFromStorage);
+        // @ts-expect-error  The delete fabric.current is being passed as same type;
+        handleDelete(fabricRef.current, deleteShapeFromStorage);
         setActiveElement(defaultNavElement);
         break;
 
@@ -114,7 +116,7 @@ export default function Page() {
   useEffect(() => {
     const canvas = initializeFabric({ canvasRef, fabricRef });
 
-    canvas.on("mouse:down", (options: any) => {
+    canvas.on("mouse:down", (options: fabric.IEvent) => {
       handleCanvasMouseDown({
         options,
         canvas,
@@ -124,7 +126,7 @@ export default function Page() {
       })
     }); 
 
-    canvas.on("mouse:move", (options: any) => {
+    canvas.on("mouse:move", (options: fabric.IEvent) => {
       handleCanvaseMouseMove({
         options,
         canvas,
@@ -147,14 +149,14 @@ export default function Page() {
       });
     });
 
-    canvas.on("object:modified", (options: any) => {
+    canvas.on("object:modified", (options: fabric.IEvent) => {
       handleCanvasObjectModified({
         options,
         syncShapeInStorage
       })
     });
     
-    canvas.on("selection:created", (options: any) => {
+    canvas.on("selection:created", (options: fabric.IEvent) => {
       handleCanvasSelectionCreated({
         options,
         isEditingRef: {...isEditingRef, current: true}, 
@@ -163,24 +165,25 @@ export default function Page() {
     });
     
     // The scaling mission failed. The thing is this inbuilt function doesn't work gotta work on it after i've completed the other features.
-    canvas.on("object:scaling", (options: any) => {
+    canvas.on("object:scaling", (options: fabric.IEvent) => {
       console.log("Scaled Element:", options);
       // handleCanvasObjectScaling({
       //   options, setElementAttributes,
       // });
     });
 
-    canvas.on("path:created", (options: any) => {
+    canvas.on("path:created", (options: fabric.IEvent) => {
       handlePathCreated({
         options, syncShapeInStorage    
       })
     })
 
     window.addEventListener("resize", () => {
+        // @ts-expect-error this fabricRef is actually same type as defined but still giving error.
       handleResize({ fabricRef });
     })
 
-    window.addEventListener("keydown", (e: any) => {
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
       handleKeyDown({
         e, 
         canvas: fabricRef.current, 
@@ -194,7 +197,7 @@ export default function Page() {
     return () => {
       canvas.dispose();
     }
-  }, []);
+  }, [deleteShapeFromStorage, redo, syncShapeInStorage, undo]);
 
   useEffect(() => {
     renderCanvas({ fabricRef, canvasObjects, activeObjectRef});
@@ -203,14 +206,18 @@ export default function Page() {
   return (
     <main className="h-screen overflow-hidden">
       <Navbar activeElement={activeElement} handleActiveElement={handleActiveElement} imageInputRef={imageInputRef} 
-      handleImageUpload={(e: any) => {
+      handleImageUpload={(e: React.ChangeEvent<HTMLInputElement>) => {
         e.stopPropagation();
-        handleImageUpload({
-          file: e.target.files[0],
-          canvas: fabricRef as any,
-          shapeRef,
-          syncShapeInStorage,
-        });
+        const file = e.target.files?.[0]; // Use optional chaining to safely access the first file  
+        if (file) { // Check if a file is selected
+            handleImageUpload({
+            file,
+            // @ts-expect-error the canvas is also being passed as same useRef type;
+            canvas: fabricRef,
+            shapeRef,
+            syncShapeInStorage,
+            });
+        }
       }}/>
       <section className="flex h-full flex-row overflow-hidden">
         <LeftSidebar allShapes={Array.from(canvasObjects)} />

@@ -39,7 +39,8 @@ export const createCircle = (pointer: PointerEvent) => {
     radius: 100,
     fill: "#aabbcc",
     objectId: uuidv4(),
-  } as any);
+    // The new type added;
+  } as fabric.ICircleOptions);
 };
 
 export const createLine = (pointer: PointerEvent) => {
@@ -105,7 +106,7 @@ export const handleImageUpload = ({
 
       canvas.current.add(img);
 
-      // @ts-ignore
+      // @ts-expect-error this uuidv4 can give type error because the compiler doesn't know about types of this id
       img.objectId = uuidv4();
 
       shapeRef.current = img;
@@ -149,6 +150,7 @@ export const modifyShape = ({
   // if  property is width or height, set the scale of the selected element
   if (selectedElement.type === "circle") {
     if (property === "width" || property === "height") {
+      // @ts-expect-error "The radius is actually a property type."
       selectedElement.set("radius", parseFloat(value) / 2);
     }
   } else if (property === "width") {

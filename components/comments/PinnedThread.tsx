@@ -14,6 +14,7 @@ type Props = {
 
 export const PinnedThread = ({ thread, onFocus, ...props }: Props) => {
   // Open pinned threads that have just been created
+  
   const startMinimized = useMemo(
     () => Number(new Date()) - Number(new Date(thread.createdAt)) > 100,
     [thread]
@@ -27,20 +28,20 @@ export const PinnedThread = ({ thread, onFocus, ...props }: Props) => {
    *
    * useMemo: https://react.dev/reference/react/useMemo
    */
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedContent = useMemo(
     () => (
       <div
         className='absolute flex cursor-pointer gap-4'
         {...props}
-        onClick={(e: any) => {
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
           onFocus(thread.id);
 
           // check if click is on/in the composer
           if (
-            e.target &&
-            e.target.classList.contains("lb-icon") &&
-            e.target.classList.contains("lb-button-icon")
+            e.currentTarget &&
+            e.currentTarget.classList.contains("lb-icon") &&
+            e.currentTarget.classList.contains("lb-button-icon")
           ) {
             return;
           }
@@ -76,6 +77,6 @@ export const PinnedThread = ({ thread, onFocus, ...props }: Props) => {
     ),
     [thread.comments.length, minimized,thread.metadata.resolved]
   );
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   return <>{memoizedContent}</>;
 };

@@ -91,7 +91,7 @@ export const handleCanvasMouseDown = ({
     // create custom fabric object/shape and set it to shapeRef
     shapeRef.current = createSpecificShape(
       selectedShapeRef.current,
-      pointer as any
+      pointer as PointerEvent
     );
 
     // if shapeRef is not null, add it to canvas
@@ -301,12 +301,14 @@ export const handleCanvasSelectionCreated = ({
       height: scaledHeight?.toFixed(0).toString() || "",
       fill: selectedElement?.fill?.toString() || "",
       stroke: selectedElement?.stroke || "",
-      // @ts-ignore
+      // @ts-expect-error the fontSize actually exists in this selectedElement
       fontSize: selectedElement?.fontSize || "",
-      // @ts-ignore
+      // @ts-expect-error the fontFamily actually exists in this selectedElement
       fontFamily: selectedElement?.fontFamily || "",
-      // @ts-ignore
+      // @ts-expect-error the fontWeight actually exists in this selectedElement
       fontWeight: selectedElement?.fontWeight || "",
+      opacity: selectedElement?.opacity?.toString() || '1',
+
     });
   }
 };
@@ -317,6 +319,10 @@ export const handleCanvasObjectScaling = ({
   setElementAttributes,
 }: CanvasObjectScaling) => {
   const selectedElement = options.target;
+
+  if (!selectedElement) {
+    return;
+  }
 
   // calculate scaled dimensions of the object
   const scaledWidth = selectedElement?.scaleX

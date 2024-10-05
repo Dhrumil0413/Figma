@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { ThreadData, User } from "@liveblocks/client";
+import { ThreadData } from "@liveblocks/client";
 
-import { ThreadMetadata, useEditThreadMetadata, useThreads, useUser } from "@/liveblocks.config";
+import { ThreadMetadata, useEditThreadMetadata, useThreads } from "@/liveblocks.config";
 import { useMaxZIndex } from "@/lib/useMaxZIndex";  
 
 import { PinnedThread } from "./PinnedThread";
