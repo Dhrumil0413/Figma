@@ -10,6 +10,8 @@ import { Button } from "./ui/button";
 import ShapesMenu from "./ShapesMenu";
 import ActiveUsers from "./users/ActiveUsers";
 import { NewThread } from "./comments/NewThread";
+import { signOut } from "next-auth/react";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Navbar = ({ activeElement, imageInputRef, handleImageUpload, handleActiveElement }: NavbarProps) => {
   const isActive = (value: string | Array<ActiveElement>) =>
@@ -18,7 +20,7 @@ const Navbar = ({ activeElement, imageInputRef, handleImageUpload, handleActiveE
 
   return (
     <nav className="flex select-none items-center justify-between gap-4 bg-primary-black px-5 text-white">
-      <Image src="/assets/logo.svg" alt="FigPro Logo" width={58} height={20} />
+      <Image src="/assets/draw.png" alt="FigPro Logo" width={30} height={20} />
 
       <ul className="flex flex-row">
         {navElements.map((item: ActiveElement | any) => (
@@ -67,7 +69,12 @@ const Navbar = ({ activeElement, imageInputRef, handleImageUpload, handleActiveE
         ))}
       </ul>
 
+      <div className="flex items-center justify-center space-x-3">
       <ActiveUsers />
+      <Button onClick={() => signOut()} className="relative w-5 h-5 object-contain">
+        <LogoutIcon />
+      </Button>
+      </div>
     </nav>
   );
 };
