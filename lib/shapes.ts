@@ -153,6 +153,10 @@ export const modifyShape = ({
       // @ts-expect-error "The radius is actually a property type."
       selectedElement.set("radius", parseFloat(value) / 2);
     }
+    else {
+      if (selectedElement[property as keyof object] === value) return;
+      selectedElement.set(property as keyof object, value);
+    }
   } else if (property === "width") {
     selectedElement.set("scaleX", 1);
     selectedElement.set("width", value);  
